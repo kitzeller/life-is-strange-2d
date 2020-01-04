@@ -42,7 +42,7 @@ var WorldScene = new Phaser.Class({
         // make all tiles in obstacles collidable
         obstacles.setCollisionByExclusion([-1]);
 
-        //  animation with key 'left', we don't need left and right as we will use one and flip the sprite
+        //  Player 1 Animations
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('player', {frames: [1, 7, 1, 13]}),
@@ -50,7 +50,6 @@ var WorldScene = new Phaser.Class({
             repeat: -1
         });
 
-        // animation with key 'right'
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers('player', {frames: [1, 7, 1, 13]}),
@@ -70,8 +69,38 @@ var WorldScene = new Phaser.Class({
             repeat: -1
         });
 
+
+        // Player 2 Animations
+        this.anims.create({
+            key: 'left2',
+            frames: this.anims.generateFrameNumbers('player', {frames: [4, 10, 4, 16]}),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'right2',
+            frames: this.anims.generateFrameNumbers('player', {frames: [4, 10, 4, 16]}),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'up2',
+            frames: this.anims.generateFrameNumbers('player', {frames: [5, 11, 5, 17]}),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'down2',
+            frames: this.anims.generateFrameNumbers('player', {frames: [3, 9, 3, 15]}),
+            frameRate: 10,
+            repeat: -1
+        });
+
         // our player sprite created through the phycis system
-        this.player = this.physics.add.sprite(50, 100, 'player', 6);
+        this.player = this.physics.add.sprite(70, 100, 'player', 6);
+
+        this.playerTwo = this.physics.add.sprite(50, 100, 'player', 3);
 
         // don't go out of the map
         this.physics.world.bounds.width = map.widthInPixels;
@@ -108,40 +137,74 @@ var WorldScene = new Phaser.Class({
         // shake the world
         this.cameras.main.shake(300);
 
-        // start battle 
+        // TODO: start battle?
     },
     update: function (time, delta) {
         //    this.controls.update(delta);
 
+        // TODO: Improve follow physics...
         this.player.body.setVelocity(0);
+        this.playerTwo.body.setVelocity(0);
 
         // Horizontal movement
         if (this.cursors.left.isDown) {
+            this.playerTwo.x = this.player.x + 20;
+            this.playerTwo.y = this.player.y;
+
             this.player.body.setVelocityX(-80);
+            this.playerTwo.body.setVelocityX(-80);
         } else if (this.cursors.right.isDown) {
+            this.playerTwo.x = this.player.x - 20;
+            this.playerTwo.y = this.player.y;
+
             this.player.body.setVelocityX(80);
+            this.playerTwo.body.setVelocityX(80);
         }
 
         // Vertical movement
         if (this.cursors.up.isDown) {
+            this.playerTwo.x = this.player.x;
+            this.playerTwo.y = this.player.y + 20;
+
             this.player.body.setVelocityY(-80);
+            this.playerTwo.body.setVelocityY(-80);
         } else if (this.cursors.down.isDown) {
+            this.playerTwo.x = this.player.x;
+            this.playerTwo.y = this.player.y - 20;
+
             this.player.body.setVelocityY(80);
+            this.playerTwo.body.setVelocityY(80);
         }
 
         // Update the animation last and give left/right animations precedence over up/down animations
         if (this.cursors.left.isDown) {
             this.player.anims.play('left', true);
             this.player.flipX = true;
+
+            this.playerTwo.anims.play('left2', true);
+            this.playerTwo.flipX = true;
+
         } else if (this.cursors.right.isDown) {
             this.player.anims.play('right', true);
             this.player.flipX = false;
+
+            this.playerTwo.anims.play('right2', true);
+            this.playerTwo.flipX = false;
+
         } else if (this.cursors.up.isDown) {
             this.player.anims.play('up', true);
+
+            this.playerTwo.anims.play('up2', true);
+
+
         } else if (this.cursors.down.isDown) {
             this.player.anims.play('down', true);
+
+            this.playerTwo.anims.play('down2', true);
+
         } else {
             this.player.anims.stop();
+            this.playerTwo.anims.stop();
         }
     }
 
